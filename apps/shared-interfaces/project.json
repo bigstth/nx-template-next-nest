@@ -1,0 +1,19 @@
+{
+  "name": "shared-interfaces",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shared-interfaces/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/shared-interfaces",
+        "main": "apps/shared-interfaces/src/index.ts",
+        "tsConfig": "apps/shared-interfaces/tsconfig.lib.json",
+        "assets": ["apps/shared-interfaces/*.md"]
+      }
+    }
+  }
+}
