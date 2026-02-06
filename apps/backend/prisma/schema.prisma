@@ -2,7 +2,9 @@
 // Add your models below
 
 generator client {
-    provider = "prisma-client-js"
+    provider   = "prisma-client"
+    engineType = "client"
+    output     = "../src/generated"
 }
 
 datasource db {
