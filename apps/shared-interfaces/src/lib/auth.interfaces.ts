@@ -14,7 +14,7 @@ export interface LoginRequestInterface {
 
 // Response Interfaces
 export interface UserResponseInterface {
-  id: number;
+  id: string;
   email: string;
   role: UserRole;
   createdAt: Date;
@@ -28,7 +28,7 @@ export interface LoginResponseInterface {
 }
 
 export interface RegisterResponseInterface {
-  id: number;
+  id: string;
   email: string;
   role: UserRole;
   createdAt: Date;

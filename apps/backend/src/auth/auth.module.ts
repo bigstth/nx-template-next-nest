@@ -8,6 +8,9 @@ import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { DiscordStrategy } from './strategies/discord.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -27,6 +30,9 @@ import { RolesGuard } from './guards/roles.guard';
     JwtStrategy,
     JwtRefreshStrategy,
     LocalStrategy,
+    GoogleStrategy,
+    FacebookStrategy,
+    DiscordStrategy,
     JwtAuthGuard,
     JwtRefreshAuthGuard,
     RolesGuard,

@@ -7,12 +7,37 @@ datasource db {
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    email     String   @unique
-    password  String
-    role      Role     @default(USER)
+    id          String  @id @default(uuid())
+    email       String  @unique
+    password    String? // Optional for OAuth users
+    role        Role    @default(USER)
+    displayName String?
+    avatar      String?
+
+    // One user can have multiple OAuth accounts
+    oauthAccounts OAuthAccount[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([email])
+}
+
+model OAuthAccount {
+    id         String @id @default(uuid())
+    provider   String // 'google', 'facebook', 'discord'
+    providerId String // OAuth provider's user ID
+
+    // Link to User
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // One provider account can only link to one user
+    @@unique([provider, providerId])
+    @@index([userId])
 }
 
 enum Role {

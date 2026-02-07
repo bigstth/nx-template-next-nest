@@ -24,7 +24,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    if (user && user.password && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
       return result;
     }
@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   async refreshAccessToken(
-    userId: number,
+    userId: string,
     email: string,
     role: string,
   ): Promise<RefreshResponseDto> {
@@ -106,6 +106,58 @@ export class AuthService {
       }
       throw new BadRequestException('Failed to register user');
     }
+  }
+
+  async validateOAuthUser(profile: {
+    provider: string;
+    providerId: string;
+    email: string | null;
+    displayName: string;
+    avatar: string | null;
+  }) {
+    // Try to find user by provider and providerId
+    let user = await this.usersService.findByProviderAndId(
+      profile.provider,
+      profile.providerId,
+    );
+
+    if (user) {
+      // User exists, update display name and avatar if changed
+      if (
+        user.displayName !== profile.displayName ||
+        user.avatar !== profile.avatar
+      ) {
+        user = await this.usersService.updateOAuthProfile(user.id, {
+          displayName: profile.displayName,
+          avatar: profile.avatar,
+        });
+      }
+      return user;
+    }
+
+    // If user doesn't exist, check if email is already registered with another provider
+    if (profile.email) {
+      const existingUser = await this.usersService.findByEmail(profile.email);
+      if (existingUser) {
+        // Email exists but with different provider - link accounts
+        return await this.usersService.linkOAuthProvider(existingUser.id, {
+          provider: profile.provider,
+          providerId: profile.providerId,
+          displayName: profile.displayName,
+          avatar: profile.avatar,
+        });
+      }
+    }
+
+    // Create new user from OAuth profile
+    return await this.usersService.createFromOAuth({
+      email: profile.email,
+      provider: profile.provider,
+      providerId: profile.providerId,
+      displayName: profile.displayName,
+      avatar: profile.avatar,
+      role: UserRole.USER, // Default role for OAuth users
+    });
   }
 
   private validatePasswordStrength(password: string): void {

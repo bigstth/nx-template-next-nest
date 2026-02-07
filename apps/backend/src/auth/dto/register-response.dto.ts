@@ -1,7 +1,7 @@
 import { RegisterResponseInterface, UserRole } from '@vcafe/shared-interfaces';
 
 export class RegisterResponseDto implements RegisterResponseInterface {
-  id: number;
+  id: string;
   email: string;
   role: UserRole;
   createdAt: Date;
