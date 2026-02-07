@@ -9,7 +9,9 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nest build"
+        "commands": ["nest build", "cp -r prisma/generated dist/prisma/"],
+        "cwd": "apps/backend",
+        "parallel": false
       }
     },
     "format": {
@@ -28,8 +30,12 @@
     "start:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nest start --watch",
-        "cwd": "apps/backend"
+        "commands": [
+          "mkdir -p dist/prisma && cp -r prisma/generated dist/prisma/",
+          "nest start --watch"
+        ],
+        "cwd": "apps/backend",
+        "parallel": false
       }
     },
     "start:debug": {
