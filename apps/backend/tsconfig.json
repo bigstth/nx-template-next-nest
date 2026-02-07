@@ -13,6 +13,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@vcafe/shared-interfaces": ["../shared-interfaces/src/index.ts"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

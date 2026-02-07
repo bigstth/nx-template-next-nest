@@ -15,8 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@vcafe/shared-interfaces": ["apps/src/index.ts"],
-      "@vcafe-shared-interfaces": ["apps/shared-interfaces/src/index.ts"]
+      "@vcafe/shared-interfaces": ["apps/shared-interfaces/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

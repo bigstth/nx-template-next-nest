@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
@@ -8,6 +13,7 @@ import {
   LoginResponseDto,
   RefreshResponseDto,
 } from './dto';
+import { UserRole } from '@vcafe/shared-interfaces';
 
 @Injectable()
 export class AuthService {
@@ -60,14 +66,87 @@ export class AuthService {
   async register(
     registerDto: RegisterRequestDto,
   ): Promise<RegisterResponseDto> {
-    const hashed = await bcrypt.hash(registerDto.password, 10);
-    const user = await this.usersService.create({
-      ...registerDto,
-      password: hashed,
-    });
+    // 1. Check if user already exists
+    const existingUser = await this.usersService.findByEmail(registerDto.email);
+    if (existingUser) {
+      throw new ConflictException('Email is already registered');
+    }
 
-    // Remove password from response
-    const { password, ...result } = user;
-    return new RegisterResponseDto(result);
+    // 2. Validate password strength
+    this.validatePasswordStrength(registerDto.password);
+
+    // 3. Sanitize email (lowercase, trim)
+    const sanitizedEmail = registerDto.email.toLowerCase().trim();
+
+    // 4. Hash password with secure salt rounds
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
+
+    try {
+      // 5. Create user
+      const user = await this.usersService.create({
+        ...registerDto,
+        email: sanitizedEmail,
+        password: hashedPassword,
+      });
+
+      // 6. Map to DTO (password excluded, role type converted)
+      return new RegisterResponseDto({
+        id: user.id,
+        email: user.email,
+        role: user.role as UserRole,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      });
+    } catch (error) {
+      // Handle database errors
+      if (error.code === '23505') {
+        // Unique constraint violation (PostgreSQL)
+        throw new ConflictException('Email is already registered');
+      }
+      throw new BadRequestException('Failed to register user');
+    }
+  }
+
+  private validatePasswordStrength(password: string): void {
+    // Password must be at least 6 characters (validated by DTO)
+    // Additional strength checks
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < 8) {
+      throw new BadRequestException(
+        'Password must be at least 8 characters long',
+      );
+    }
+
+    const strengthCount = [
+      hasUpperCase,
+      hasLowerCase,
+      hasNumbers,
+      hasSpecialChar,
+    ].filter(Boolean).length;
+
+    if (strengthCount < 3) {
+      throw new BadRequestException(
+        'Password must contain at least 3 of the following: uppercase letter, lowercase letter, number, special character',
+      );
+    }
+
+    // Check for common weak passwords
+    const commonPasswords = [
+      'password',
+      '12345678',
+      'qwerty',
+      'admin',
+      'letmein',
+    ];
+    if (
+      commonPasswords.some((common) => password.toLowerCase().includes(common))
+    ) {
+      throw new BadRequestException('Password is too common or weak');
+    }
   }
 }

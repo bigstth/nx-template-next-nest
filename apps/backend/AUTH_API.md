@@ -11,7 +11,7 @@
 ```typescript
 {
   email: string;      // Valid email format
-  password: string;   // Min 6 characters
+  password: string;   // Min 8 characters with complexity requirements
   role?: 'USER' | 'VIP' | 'MODERATOR' | 'ADMIN';  // Optional, defaults to USER
 }
 ```
@@ -30,9 +30,20 @@
 
 **Validation Rules:**
 
-- Email must be valid format
-- Password must be at least 6 characters
+- Email must be valid format and unique (case-insensitive)
+- Password must be at least 8 characters
+- Password must contain at least 3 of:
+  - Uppercase letter (A-Z)
+  - Lowercase letter (a-z)
+  - Number (0-9)
+  - Special character (!@#$%^&\*(),.?":{}|<>)
+- Password cannot contain common weak passwords (e.g., 'password', '12345678')
 - Role must be one of: USER, VIP, MODERATOR, ADMIN
+
+**Error Responses:**
+
+- `409 Conflict`: Email is already registered
+- `400 Bad Request`: Password validation failed or weak password
 
 ---
 
@@ -45,7 +56,7 @@
 ```typescript
 {
   email: string; // Valid email format
-  password: string; // Min 6 characters
+  password: string; // Your current password
 }
 ```
 

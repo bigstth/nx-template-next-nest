@@ -6,6 +6,6 @@ export class LoginRequestDto implements LoginRequestInterface {
   email: string;
 
   @IsString()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(1, { message: 'Password is required' })
   password: string;
 }
