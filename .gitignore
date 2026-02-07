@@ -48,3 +48,5 @@ vite.config.*.timestamp*
 .next
 out
 .env
+.env.production
+.env.development

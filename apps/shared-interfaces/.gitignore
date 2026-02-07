@@ -1,0 +1,22 @@
+# Compiled output
+*.js
+*.js.map
+*.d.ts
+!*.config.js
+!jest.config.ts
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
