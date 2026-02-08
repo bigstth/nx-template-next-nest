@@ -15,8 +15,10 @@ export interface LoginRequestInterface {
 // Response Interfaces
 export interface UserResponseInterface {
   id: string;
-  email: string;
+  email: string | null;
   role: UserRole;
+  displayName?: string | null;
+  avatar?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -9,7 +9,7 @@ export class RegisterResponseDto implements RegisterResponseInterface {
 
   constructor(data: RegisterResponseInterface) {
     this.id = data.id;
-    this.email = data.email;
+    this.email = data.email!; // Non-null assertion: register always requires email
     this.role = data.role;
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;

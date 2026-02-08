@@ -47,7 +47,7 @@ export class UsersService {
   }) {
     return this.prisma.user.create({
       data: {
-        email: data.email as string,
+        email: data.email ?? null, // Allow null for OAuth users without email
         password: null, // OAuth users don't have password
         displayName: data.displayName,
         avatar: data.avatar,

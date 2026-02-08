@@ -8,7 +8,7 @@ datasource db {
 
 model User {
     id          String  @id @default(uuid())
-    email       String  @unique
+    email       String? @unique // Optional for OAuth users without email
     password    String? // Optional for OAuth users
     role        Role    @default(USER)
     displayName String?

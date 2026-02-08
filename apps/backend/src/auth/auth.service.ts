@@ -93,7 +93,7 @@ export class AuthService {
       // 6. Map to DTO (password excluded, role type converted)
       return new RegisterResponseDto({
         id: user.id,
-        email: user.email,
+        email: user.email!, // Non-null assertion: register always requires email
         role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
